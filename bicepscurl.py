@@ -21,10 +21,10 @@ def start_detection():
     left_count = 0
     right_flag = None
     right_count = 0
+    detection_started = False
 
     cap = cv2.VideoCapture(0)
     pose = mp_pose.Pose(min_detection_confidence=0.7, min_tracking_confidence=0.5)
-    detection_started = False
 
     while cap.isOpened():
         _, frame = cap.read()
@@ -74,24 +74,28 @@ def start_detection():
             except:
                 pass
 
-            cv2.putText(image, "Press 'Q' to exit", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(image, "Press 'Q' to exit", (50, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (173, 216, 230), 2, cv2.LINE_AA)
+            cv2.putText(image, "Press 'R' to reset counts", (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (173, 216, 230), 2, cv2.LINE_AA)
             cv2.putText(image, f'Left Hand Count: {left_count}',
-                        (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+                        (50, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (173, 216, 230), 2, cv2.LINE_AA)
             cv2.putText(image, f'Right Hand Count: {right_count}',
-                        (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+                        (50, 180), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (173, 216, 230), 2, cv2.LINE_AA)
 
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(color=(66, 245, 117), thickness=2, circle_radius=2),
-                                      mp_drawing.DrawingSpec(color=(66, 245, 117), thickness=2, circle_radius=2)
+                                      mp_drawing.DrawingSpec(color=(173, 216, 230), thickness=2, circle_radius=2),
+                                      mp_drawing.DrawingSpec(color=(173, 216, 230), thickness=2, circle_radius=2)
                                       )
 
         cv2.imshow('MediaPipe feed', image)
 
         key = cv2.waitKey(30) & 0xff
-        if key == 27:  # Press 'Q' key to exit
+        if key == 27 or key == ord('q'):  # Press 'Q' key to exit
             break
         elif key == ord('s') and not detection_started:  # Press 'S' key to start detection
             detection_started = True
+        elif key == ord('r'):  # Press 'R' key to reset counts
+            left_count = 0
+            right_count = 0
 
     cap.release()
     cv2.destroyAllWindows()
